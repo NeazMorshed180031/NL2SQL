@@ -1,0 +1,220 @@
+====================================================================================================
+AUTOMATED SQL QUERY CONFIDENCE ANALYSIS REPORT
+Generated: 2025-12-27 03:17:13
+====================================================================================================
+
+CONFIDENCE CALCULATION METHODOLOGY
+====================================================================================================
+Confidence scores are automatically calculated based on:
+  • Syntax Validation (30 points): SQL structure, parentheses matching, basic injection checks
+  • Schema Compliance (30 points): Table/column existence, foreign key relationships
+  • Query Logic (25 points): Proper use of GROUP BY, aggregates, WHERE clauses, enum values
+  • Best Practices (15 points): Avoid SELECT *, use aliases, proper formatting
+Total: 100 points maximum
+
+EXECUTIVE SUMMARY
+====================================================================================================
+Total Queries Analyzed: 10
+Average Confidence Score: 99.1%
+Queries with 100% Confidence: 5
+Queries with 95-99% Confidence: 5
+Queries with <95% Confidence: 0
+
+====================================================================================================
+CONFIDENCE BREAKDOWN BY COMPLEXITY
+====================================================================================================
+Complexity      Count      Avg Confidence      
+----------------------------------------------------------------------------------------------------
+Simple          2          100.0%
+Medium          4          99.0%
+Complex         4          98.8%
+
+====================================================================================================
+QUICK REFERENCE TABLE
+====================================================================================================
+#     Complexity   Confidence   Status         
+----------------------------------------------------------------------------------------------------
+1     Complex      99%         ✓ Correct      
+2     Complex      100%         ✓ Correct      
+3     Complex      99%         ✓ Correct      
+4     Complex      97%         ✓ Correct      
+5     Medium       100%         ✓ Correct      
+6     Medium       99%         ✓ Correct      
+7     Medium       97%         ✓ Correct      
+8     Medium       100%         ✓ Correct      
+9     Simple       100%         ✓ Correct      
+10    Simple       100%         ✓ Correct      
+
+====================================================================================================
+DETAILED QUERY ANALYSIS
+====================================================================================================
+
+[Query 1] Complexity: Complex | Confidence: 99% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+List the names of all users who have purchased an 'iPhone 13 Pro', including the total amount they have spent on that specific product across all their orders.
+
+SQL Query:
+SELECT u.first_name, u.last_name, SUM(oi.line_total) AS total_spent 
+FROM users u 
+JOIN orders o ON u.user_id = o.user_id 
+JOIN order_items oi ON o.order_id = oi.order_id 
+WHERE oi.product_name = 'iPhone 13 Pro' 
+GROUP BY u.user_id, u.first_name, u.last_name;
+
+Automated Analysis:
+Query is correct with minor considerations. Warnings: Poor formatting/indentation. Strengths: Uses 2 JOIN(s) properly, Correctly uses aggregation with GROUP BY, Includes proper filtering conditions.
+====================================================================================================
+
+[Query 2] Complexity: Complex | Confidence: 100% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Identify the top-selling product category by revenue and list all the brands that have products within that specific category.
+
+SQL Query:
+SELECT c.name AS category_name, b.name AS brand_name 
+FROM categories c 
+JOIN products p ON c.category_id = p.category_id 
+JOIN brands b ON p.brand_id = b.brand_id 
+WHERE c.category_id = (
+  SELECT p2.category_id 
+  FROM order_items oi 
+  JOIN product_variants pv ON oi.variant_id = pv.variant_id 
+  JOIN products p2 ON pv.product_id = p2.product_id 
+  GROUP BY p2.category_id 
+  ORDER BY SUM(oi.line_total) DESC 
+  LIMIT 1
+);
+
+Automated Analysis:
+Query is fully correct with perfect score. Strengths: Uses 4 JOIN(s) properly, Correctly uses aggregation with GROUP BY, Includes proper filtering conditions.
+====================================================================================================
+
+[Query 3] Complexity: Complex | Confidence: 99% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+For products that have at least one review with a rating of 5, show the product name, its current stock quantity (summed across all variants), and the name of the brand.
+
+SQL Query:
+SELECT p.name, SUM(pv.stock_quantity) AS total_stock, b.name AS brand_name 
+FROM products p 
+JOIN product_reviews pr ON p.product_id = pr.product_id 
+JOIN product_variants pv ON p.product_id = pv.product_id 
+JOIN brands b ON p.brand_id = b.brand_id 
+WHERE pr.rating = 5 AND pr.is_approved = 1 
+GROUP BY p.product_id, p.name, b.name;
+
+Automated Analysis:
+Query is correct with minor considerations. Warnings: Poor formatting/indentation. Strengths: Uses 3 JOIN(s) properly, Correctly uses aggregation with GROUP BY, Includes proper filtering conditions.
+====================================================================================================
+
+[Query 4] Complexity: Complex | Confidence: 97% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Find all users who have a billing address in 'New York' and have placed an order with a 'delivered' status, showing their email and the order number.
+
+SQL Query:
+SELECT u.email, o.order_number 
+FROM users u 
+JOIN orders o ON u.user_id = o.user_id 
+JOIN user_addresses ua ON o.billing_address_id = ua.address_id 
+WHERE ua.city = 'New York' AND o.status = 'delivered';
+
+Automated Analysis:
+Query is correct with minor considerations. Warnings: Consider using table aliases for better readability; Poor formatting/indentation. Strengths: Uses 2 JOIN(s) properly, Includes proper filtering conditions.
+====================================================================================================
+
+[Query 5] Complexity: Medium | Confidence: 100% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Show the SKU and current stock quantity for all product variants that have 30 or fewer items remaining in stock.
+
+SQL Query:
+SELECT sku, stock_quantity 
+FROM product_variants 
+WHERE stock_quantity <= 30;
+
+Automated Analysis:
+Query is fully correct with perfect score. Strengths: Includes proper filtering conditions.
+====================================================================================================
+
+[Query 6] Complexity: Medium | Confidence: 99% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Calculate the average rating for each product that has at least one approved review.
+
+SQL Query:
+SELECT p.name, AVG(pr.rating) AS average_rating 
+FROM products p 
+JOIN product_reviews pr ON p.product_id = pr.product_id 
+WHERE pr.is_approved = 1 
+GROUP BY p.product_id, p.name;
+
+Automated Analysis:
+Query is correct with minor considerations. Warnings: Poor formatting/indentation. Strengths: Uses 1 JOIN(s) properly, Correctly uses aggregation with GROUP BY, Includes proper filtering conditions.
+====================================================================================================
+
+[Query 7] Complexity: Medium | Confidence: 97% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Retrieve all orders placed after November 1st, 2025, that have a payment status of 'paid' but a shipping status of 'pending'.
+
+SQL Query:
+SELECT * 
+FROM orders 
+WHERE created_at > '2025-11-01' 
+  AND payment_status = 'paid' 
+  AND shipping_status = 'pending';
+
+Automated Analysis:
+Query is correct with minor considerations. Warnings: Using SELECT * is not recommended; specify columns explicitly. Strengths: Includes proper filtering conditions.
+====================================================================================================
+
+[Query 8] Complexity: Medium | Confidence: 100% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+List the names of all sub-categories that fall under the 'Electronics' parent category.
+
+SQL Query:
+SELECT name 
+FROM categories 
+WHERE parent_category_id = (
+  SELECT category_id 
+  FROM categories 
+  WHERE name = 'Electronics'
+);
+
+Automated Analysis:
+Query is fully correct with perfect score. Strengths: Includes proper filtering conditions.
+====================================================================================================
+
+[Query 9] Complexity: Simple | Confidence: 100% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+Show the names and descriptions of all brands that are currently marked as active.
+
+SQL Query:
+SELECT name, description 
+FROM brands 
+WHERE is_active = 1;
+
+Automated Analysis:
+Query is fully correct with perfect score. Strengths: Includes proper filtering conditions.
+====================================================================================================
+
+[Query 10] Complexity: Simple | Confidence: 100% | ✓ Correct
+----------------------------------------------------------------------------------------------------
+NLP Query:
+What is the total number of users registered in the system?
+
+SQL Query:
+SELECT COUNT(*) 
+FROM users;
+
+Automated Analysis:
+Query is fully correct with perfect score.
+====================================================================================================
+
+====================================================================================================
+END OF REPORT
+====================================================================================================
