@@ -75,9 +75,11 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 For Backend
+# Go
 go run main.go
 
 For Confidence Python Code:
+# Python
 python confidence_checker.py
 
 The Database which  has been used to conduct the NL2SQL is also adde in the name of product_details.sql
